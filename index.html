@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDMI Grade 8-18 (Courage House) — Acebott ESP32 IoT Project</title>
+    
+    <!-- Luxury & Editorial Typography (Prada / Gucci / Adidas aesthetic) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Montserrat:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-canvas: #F9F8F5;
+            --bg-card: #FFFFFF;
+            --bg-card-subtle: #F3F1EC;
+            --text-primary: #121212;
+            --text-secondary: #5E5B54;
+            --accent-gold: #B88E44;
+            --accent-gold-light: #EBD8B7;
+            --accent-dark: #0D0D0D;
+            --border-light: rgba(18, 18, 18, 0.08);
+            --border-accent: rgba(184, 142, 68, 0.35);
+            --shadow-subtle: 0 10px 30px rgba(0, 0, 0, 0.04);
+            --shadow-hover: 0 20px 40px rgba(18, 18, 18, 0.08);
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-canvas);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            overflow-x: hidden;
+            letter-spacing: -0.01em;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-enter {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* --- Layout Container --- */
+        .wrapper {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 60px 24px 100px;
+        }
+
+        /* --- Header / Hero (Gucci & Adidas Aesthetic) --- */
+        header.hero {
+            text-align: center;
+            padding: 70px 20px 60px;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .tag-pill-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
+
+        .tag-pill {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent-gold);
+            background: #FAF5EB;
+            padding: 6px 16px;
+            border-radius: 40px;
+            border: 1px solid var(--border-accent);
+        }
+
+        .tag-pill.house {
+            background: #121212;
+            color: #FFFFFF;
+            border-color: #121212;
+        }
+
+        h1.brand-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.3rem, 5vw, 3.8rem);
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            line-height: 1.15;
+            color: var(--accent-dark);
+            margin-bottom: 18px;
+        }
+
+        .hero-subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(0.85rem, 2vw, 1.05rem);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.28em;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+
+        .meta-strip {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .meta-strip strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* --- Section Titles --- */
+        .section-header {
+            margin: 60px 0 30px;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 14px;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--accent-dark);
+        }
+
+        .section-index {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--accent-gold);
+            letter-spacing: 0.15em;
+        }
+
+        /* --- Team Grid Layout --- */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .member-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 22px;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .member-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: transparent;
+            transition: var(--transition-smooth);
+        }
+
+        .member-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .member-card:hover::before {
+            background: var(--accent-gold);
+        }
+
+        .member-card.core-lead {
+            border-color: var(--border-accent);
+            background: #FCFAF6;
+        }
+
+        .member-card.core-lead::before {
+            background: var(--accent-gold);
+        }
+
+        .member-role {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--accent-gold);
+            margin-bottom: 6px;
+        }
+
+        .member-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-dark);
+            margin-bottom: 8px;
+        }
+
+        .member-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* --- Tables --- */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: var(--bg-card-subtle);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-primary);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        td {
+            padding: 16px 20px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #FAF9F6;
+            color: var(--text-primary);
+        }
+
+        .badge-spec {
+            display: inline-block;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-dark);
+            background: var(--bg-card-subtle);
+            padding: 3px 10px;
+            border-radius: 6px;
+        }
+
+        /* --- VS Code Window Mockup --- */
+        .vscode-window {
+            background: #18181B;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin: 30px 0;
+        }
+
+        .vscode-bar {
+            background: #111113;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .window-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot.red { background: #FF5F56; }
+        .dot.yellow { background: #FFBD2E; }
+        .dot.green { background: #27C93F; }
+
+        .vscode-tab {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: #D4D4D8;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vscode-tab::before {
+            content: "•";
+            color: #60A5FA;
+            font-size: 18px;
+            line-height: 0;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: #F4F4F5;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-gold);
+            border-color: var(--accent-gold);
+            color: #000;
+            transform: scale(1.03);
+        }
+
+        pre.code-editor {
+            margin: 0;
+            padding: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: #E4E4E7;
+            background: #18181B;
+            overflow-x: auto;
+            max-height: 580px;
+        }
+
+        /* --- Step-by-Step Flow --- */
+        .step-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .step-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 20px 24px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            transition: var(--transition-smooth);
+        }
+
+        .step-item:hover {
+            border-color: var(--border-accent);
+            transform: translateX(6px);
+        }
+
+        .step-number {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 900;
+            background: var(--bg-card-subtle);
+            color: var(--accent-gold);
+            min-width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1px solid var(--border-light);
+        }
+
+        .step-content h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            color: var(--accent-dark);
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* --- Footer --- */
+        footer.doc-footer {
+            margin-top: 100px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-light);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .footer-brand {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-dark);
+            margin-bottom: 6px;
+        }
+
+        /* --- Responsive Tweaks --- */
+        @media (max-width: 768px) {
+            .wrapper { padding: 30px 16px 60px; }
+            header.hero { padding: 40px 10px 40px; }
+            .step-item { flex-direction: column; gap: 12px; }
+            .vscode-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
+            .copy-btn { align-self: flex-end; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper animate-enter">
+
+        <!-- ================= HERO SECTION ================= -->
+        <header class="hero">
+            <div class="tag-pill-container">
+                <div class="tag-pill">B.D.M. International (BDMI)</div>
+                <div class="tag-pill house">Courage House</div>
+                <div class="tag-pill">Grade 8 &middot; Section 18</div>
+            </div>
+            <h1 class="brand-title">Acebott ESP32 Max V3.0</h1>
+            <div class="hero-subtitle">Local Web Server &middot; Light Control Architecture</div>
+            <div class="meta-strip">
+                <span>School: <strong>B.D.M. International</strong></span>
+                <span>•</span>
+                <span>House: <strong>Courage House</strong></span>
+                <span>•</span>
+                <span>Class: <strong>Grade 8 &middot; Sec 18</strong></span>
+                <span>•</span>
+                <span>Pin: <strong>GPIO 32</strong></span>
+            </div>
+        </header>
+
+        <!-- ================= TEAM SECTION ================= -->
+        <section>
+            <div class="section-header">
+                <h2 class="section-title">The Project Collective</h2>
+                <span class="section-index">01 / TEAM ROLES</span>
+            </div>
+
+            <div class="team-grid">
+                <!-- Debasmita (Leader) -->
+                <div class="member-card core-lead">
+                    <div class="member-role">Team Lead &amp; Project Coordinator</div>
+                    <div class="member-name">Debasmita</div>
+                    <p class="member-desc">Overseeing roadmap milestones, Courage House team organization, operational workflow, and project submission review.</p>
+                </div>
+
+                <!-- Subhroneel (All Technical Work) -->
+                <div class="member-card core-lead">
+                    <div class="member-role">Lead Technical Architect &amp; Systems Engineer</div>
+                    <div class="member-name">Subhroneel</div>
+                    <p class="member-desc">Executed all technical execution: firmware development, HTTP web routing, C++ sketch logic, and hardware GPIO 32 interfacing.</p>
+                </div>
+
+                <!-- Mohit (Research) -->
+                <div class="member-card core-lead">
+                    <div class="member-role">Lead Technology Researcher &amp; Analyst</div>
+                    <div class="member-name">Mohit</div>
+                    <p class="member-desc">Conducted comprehensive technical research on ESP32 dual-core architecture, 802.11 Wi-Fi protocol limits, and HTTP request benchmarks.</p>
+                </div>
+
+                <!-- Adweetiya -->
+                <div class="member-card">
+                    <div class="member-role">Circuit Assembly Specialist</div>
+                    <div class="member-name">Adweetiya</div>
+                    <p class="member-desc">Managed hardware wiring, connector seating, physical module mounting, and peripheral power continuity checks.</p>
+                </div>
+
+                <!-- Atik -->
+                <div class="member-card">
+                    <div class="member-role">Quality Assurance &amp; Verification</div>
+                    <div class="member-name">Atik</div>
+                    <p class="member-desc">Conducted Wi-Fi response benchmark tests, button-toggle latency validation, and hardware reset stability checks.</p>
+                </div>
+
+                <!-- Dipto -->
+                <div class="member-card">
+                    <div class="member-role">Lead Technical Writer</div>
+                    <div class="member-name">Dipto</div>
+                    <p class="member-desc">Authored project documentation, API endpoint schemas, compilation steps, and formatted official academic logs.</p>
+                </div>
+
+                <!-- Oishik -->
+                <div class="member-card">
+                    <div class="member-role">UI / UX &amp; Presentation</div>
+                    <div class="member-name">Oishik</div>
+                    <p class="member-desc">Designed web dashboard layout drafts, styling guidelines, and prepared visual demonstration slides.</p>
+                </div>
+
+                <!-- Ayangshu -->
+                <div class="member-card">
+                    <div class="member-role">Hardware Logistics &amp; Procurement</div>
+                    <div class="member-name">Ayangshu</div>
+                    <p class="member-desc">Coordinated Acebott module components, verified CH340 driver binaries, and verified battery voltage tolerances.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SYSTEM ARCHITECTURE ================= -->
+        <section>
+            <div class="section-header">
+                <h2 class="section-title">Hardware Profile</h2>
+                <span class="section-index">02 / SPECIFICATIONS</span>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Hardware Specification</th>
+                            <th>Practical Project Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Processor</strong></td>
+                            <td>ESP-WROOM-32 &middot; 240 MHz Dual-Core LX6</td>
+                            <td>Hosts local HTTP server and runs background Wi-Fi network stacks</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Target Pin</strong></td>
+                            <td><span class="badge-spec">GPIO 32</span> (Digital Output)</td>
+                            <td>Direct signal control line driving the external Acebott light module</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Memory</strong></td>
+                            <td>520 KB SRAM &middot; 4 MB Flash</td>
+                            <td>Buffers incoming HTTP client packets and stores firmware binary</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Connectivity</strong></td>
+                            <td>802.11 b/g/n (2.4 GHz) Wi-Fi &amp; Bluetooth LE</td>
+                            <td>Broadcasting local intranet dashboard on port 80</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Serial Bridge</strong></td>
+                            <td>CH340 USB-UART (Type-C Interface)</td>
+                            <td>115200 Baud serial debugging &amp; dynamic IP display</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Power Rail</strong></td>
+                            <td>5V USB-C or 8.4V Dual Li-ion Pack</td>
+                            <td>Stable voltage delivery with on-board high-current protection</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ================= INTERACTIVE CODE SECTION ================= -->
+        <section>
+            <div class="section-header">
+                <h2 class="section-title">Firmware Repository</h2>
+                <span class="section-index">03 / SOURCE CODE</span>
+            </div>
+
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                Complete, production-tested Arduino C++ sketch authored for the Acebott ESP32 Max V3.0 board. Built using the native <code>&lt;WiFi.h&gt;</code> and <code>&lt;WebServer.h&gt;</code> libraries with non-blocking HTTP 303 redirects.
+            </p>
+
+            <div class="vscode-window">
+                <div class="vscode-bar">
+                    <div class="window-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="vscode-tab">Acebott_WebServer_LED.ino</div>
+                    <button class="copy-btn" id="copyCodeBtn" onclick="copySourceCode()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        Copy Code
+                    </button>
+                </div>
+                <pre class="code-editor"><code id="sketchCode">/*
+ * Acebott ESP32 Web Server LED Control
+ * Institution: B.D.M. International (BDMI)
+ * House: Courage House | Grade 8, Section 18
+ * Board: Acebott ESP32 Max Controller Board
+ * Pin: GPIO 32 (Connected to the light module)
+ */
+
+#include &lt;WiFi.h&gt;
+#include &lt;WebServer.h&gt;
+
+// --- Wi-Fi Credentials ---
+const char* ssid = "YOUR_SSID";
+const char* password = "YOUR_PASSWORD";
+
+// --- Hardware Pin Definition ---
+const int LED_PIN = 32;
+
+// --- Initialize Web Server on Port 80 ---
+WebServer server(80);
+
+void setup() {
+  // Initialize Serial Monitor at 115200 baud
+  Serial.begin(115200);
+  delay(1000);
+
+  // Configure LED pin as digital output and ensure it starts LOW (Off)
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
+
+  // Connect to Wi-Fi network
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, password);
+
+  // Wait for connection
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected.");
+  Serial.print("IP address: ");
+  // Print the local IP address to the Serial Monitor
+  Serial.println(WiFi.localIP());
+
+  // Define HTTP route handlers
+  server.on("/", handleRoot);
+  server.on("/led/on", handleLedOn);
+  server.on("/led/off", handleLedOff);
+
+  // Start the server
+  server.begin();
+  Serial.println("HTTP server started");
+}
+
+void loop() {
+  // Handle client requests
+  server.handleClient();
+}
+
+// --- Route Handler: Root Dashboard ("/") ---
+void handleRoot() {
+  int ledState = digitalRead(LED_PIN);
+  
+  String html = "&lt;html lang=\"en\"&gt;";
+  html += "&lt;head&gt;";
+  html += "&lt;meta charset=\"UTF-8\"&gt;";
+  html += "&lt;meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"&gt;";
+  html += "&lt;title&gt;Acebott ESP32 Light Control&lt;/title&gt;";
+  html += "&lt;style&gt;";
+  html += "body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f9; margin-top: 50px; color: #333; }";
+  html += ".container { display: inline-block; padding: 30px; background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }";
+  html += "h1 { color: #0066cc; }";
+  html += ".status { font-size: 1.2rem; margin: 20px 0; font-weight: bold; }";
+  html += ".btn { display: inline-block; padding: 12px 24px; font-size: 1rem; color: white; border: none; border-radius: 5px; text-decoration: none; cursor: pointer; margin: 10px; }";
+  html += ".btn-on { background-color: #28a745; }";
+  html += ".btn-off { background-color: #dc3545; }";
+  html += ".btn:hover { opacity: 0.9; }";
+  html += "&lt;/style&gt;";
+  html += "&lt;/head&gt;";
+  html += "&lt;body&gt;";
+  html += "&lt;div class=\"container\"&gt;";
+  html += "&lt;h1&gt;Acebott ESP32 Light Control&lt;/h1&gt;";
+  
+  if (ledState == HIGH) {
+    html += "&lt;p class=\"status\"&gt;Status: &lt;span style=\"color: #28a745;\"&gt;ON&lt;/span&gt;&lt;/p&gt;";
+    html += "&lt;a href=\"/led/off\" class=\"btn btn-off\"&gt;Turn OFF&lt;/a&gt;";
+  } else {
+    html += "&lt;p class=\"status\"&gt;Status: &lt;span style=\"color: #dc3545;\"&gt;OFF&lt;/span&gt;&lt;/p&gt;";
+    html += "&lt;a href=\"/led/on\" class=\"btn btn-on\"&gt;Turn ON&lt;/a&gt;";
+  }
+  
+  html += "&lt;/div&gt;";
+  html += "&lt;/body&gt;";
+  html += "&lt;/html&gt;";
+
+  server.send(200, "text/html", html);
+}
+
+// --- Route Handler: Turn LED ON ("/led/on") ---
+void handleLedOn() {
+  digitalWrite(LED_PIN, HIGH);
+  // Redirect back to root dashboard with HTTP status 303 (See Other)
+  server.sendHeader("Location", "/");
+  server.send(303);
+}
+
+// --- Route Handler: Turn LED OFF ("/led/off") ---
+void handleLedOff() {
+  digitalWrite(LED_PIN, LOW);
+  // Redirect back to root dashboard with HTTP status 303 (See Other)
+  server.sendHeader("Location", "/");
+  server.send(303);
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- ================= STEP BY STEP EXECUTION ================= -->
+        <section>
+            <div class="section-header">
+                <h2 class="section-title">Deployment Protocol</h2>
+                <span class="section-index">04 / WORKFLOW</span>
+            </div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">01</div>
+                    <div class="step-content">
+                        <h4>Driver Installation</h4>
+                        <p>Ensure the CH340 USB driver is installed on Windows or macOS so that the virtual COM port enumerates correctly.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">02</div>
+                    <div class="step-content">
+                        <h4>Board Environment Setup</h4>
+                        <p>In the Arduino IDE, set the target board to <code>ESP32 Dev Module</code> (Upload Speed: 921600, CPU Frequency: 240MHz, Flash Frequency: 80MHz).</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">03</div>
+                    <div class="step-content">
+                        <h4>Hardware Interfacing</h4>
+                        <p>Wire the Acebott Light Module Signal pin to <strong>GPIO 32</strong>, the VCC pin to <strong>5V / 3.3V</strong>, and GND to <strong>GND</strong> on the header pins.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">04</div>
+                    <div class="step-content">
+                        <h4>Firmware Flashing</h4>
+                        <p>Configure your 2.4 GHz network credentials in the sketch, hit compile/upload, and open the Serial Monitor at <strong>115200 baud</strong> to fetch the assigned IP address.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= FOOTER ================= -->
+        <footer class="doc-footer">
+            <div class="footer-brand">B.D.M. International &middot; Courage House (Grade 8, Sec 18)</div>
+            <p>Full Technical Architecture &amp; Firmware by <strong>Subhroneel</strong> &middot; Research &amp; Feasibility by <strong>Mohit</strong> &middot; Coordinated by <strong>Debasmita</strong></p>
+        </footer>
+
+    </div>
+
+    <!-- Interactive Copy Button Script -->
+    <script>
+        function copySourceCode() {
+            const codeText = document.getElementById("sketchCode").innerText;
+            const btn = document.getElementById("copyCodeBtn");
+
+            navigator.clipboard.writeText(codeText).then(() => {
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = `✓ Copied!`;
+                btn.style.background = "#27C93F";
+                btn.style.borderColor = "#27C93F";
+                btn.style.color = "#000";
+
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.style.background = "";
+                    btn.style.borderColor = "";
+                    btn.style.color = "";
+                }, 2200);
+            }).catch(err => {
+                alert("Copy failed, please copy manually.");
+            });
+        }
+    </script>
+</body>
+</html>
